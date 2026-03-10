@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="p-4 p-md-5 mb-4 rounded-3 hero">
+  <h1>AI Startup Idea Validator</h1>
+  <p class="lead">Quickly evaluate startup ideas using AI-driven scoring, SWOT analysis, and actionable recommendations.</p>
+  {% if g.user %}
+    <a class="btn btn-success" href="{{ url_for('submit_idea') }}">Validate a New Idea</a>
+  {% else %}
+    <a class="btn btn-primary" href="{{ url_for('login') }}">Get Started</a>
+  {% endif %}
+</div>
+
+{% if g.user %}
+<h3>Your Recent Evaluations</h3>
+<table class="table table-striped">
+  <thead>
+    <tr><th>Title</th><th>Date</th><th>Feasibility</th><th>Action</th></tr>
+  </thead>
+  <tbody>
+    {% for row in history %}
+    <tr>
+      <td>{{ row['title'] }}</td>
+      <td>{{ row['created_at'] }}</td>
+      <td>{{ row['feasibility_score'] if row['feasibility_score'] is not none else '-' }}</td>
+      <td><a href="{{ url_for('result', idea_id=row['id']) }}" class="btn btn-sm btn-outline-primary">View</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4" class="text-muted">No ideas yet. Submit your first startup idea.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endblock %}

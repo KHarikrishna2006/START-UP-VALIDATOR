@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ data['title'] }}</h2>
+<p class="text-muted">{{ data['description'] }}</p>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="card metric"><h5>Feasibility</h5><p>{{ data['feasibility_score'] }}/100</p></div></div>
+  <div class="col-md-3"><div class="card metric"><h5>Market</h5><p>{{ data['market_score'] }}/100</p></div></div>
+  <div class="col-md-3"><div class="card metric"><h5>Competition</h5><p>{{ data['competition_score'] }}/100</p></div></div>
+  <div class="col-md-3"><div class="card metric"><h5>Trend</h5><p>{{ data['trend_score'] }}/100</p></div></div>
+</div>
+
+<div class="card p-3 mb-4">
+  <h4>Score Breakdown</h4>
+  <canvas id="scoreChart" height="100"></canvas>
+</div>
+
+<div class="row g-3">
+  {% for label, items in swot.items() %}
+  <div class="col-md-6">
+    <div class="card p-3 h-100">
+      <h5 class="text-capitalize">{{ label }}</h5>
+      <ul>
+      {% for item in items %}
+        <li>{{ item }}</li>
+      {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="card p-3 mt-4">
+  <h4>Improvement Tips</h4>
+  <ol>
+    {% for tip in tips %}
+      <li>{{ tip }}</li>
+    {% endfor %}
+  </ol>
+</div>
+
+<div class="card p-3 mt-4">
+  <h4>Live Data Sources Used</h4>
+  <ul>
+    {% for row in source_rows %}
+      <li>{{ row }}</li>
+    {% else %}
+      <li>No live sources available for this run.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const ctx = document.getElementById('scoreChart');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Market', 'Competition', 'Trend', 'Feasibility'],
+      datasets: [{
+        label: 'Score',
+        data: [{{ data['market_score'] }}, {{ data['competition_score'] }}, {{ data['trend_score'] }}, {{ data['feasibility_score'] }}],
+        backgroundColor: ['#0d6efd', '#6f42c1', '#198754', '#fd7e14']
+      }]
+    },
+    options: { scales: { y: { beginAtZero: true, max: 100 } } }
+  });
+</script>
+{% endblock %}
